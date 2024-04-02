@@ -6,6 +6,7 @@ import Settings from "../screens/Settings";
 import Favourites from "../screens/Favourites";
 import Animations from "../screens/Animation";
 import AddRecipe from "../screens/AddRecipe";
+import EditRecipe from "../screens/EditRecipe";
 import { useThemeStyles } from "../context/ThemeContext";
 
 const Drawer = createDrawerNavigator();
@@ -70,6 +71,16 @@ export default function DrawerNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="add-outline" size={size} color={color} />
           ),
+        }}
+      />
+      <Drawer.Screen
+        name="EditRecipe"
+        component={EditRecipe}
+        options={{
+          drawerLabel: () => null, // Hide it from the drawer menu
+          title: "Edit Recipe", // Use title to specify the header title
+          drawerIcon: () => null, // Hide the icon as well
+          drawerItemStyle: { height: 0 }, // Minimize the space it takes up
         }}
       />
     </Drawer.Navigator>

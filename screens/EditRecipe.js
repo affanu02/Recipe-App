@@ -13,23 +13,27 @@ import SimpleButton from "../components/SimpleButton";
 import RadioButton from "../components/RadioButton";
 import { useThemeStyles } from "../context/ThemeContext";
 import Toast from "react-native-toast-message";
-import { addRecipeToDB } from "../context/databaseManager";
+import { updateRecipeInDB } from "../context/databaseManager";
 
-//Simple page output for settings
-export default function AddRecipe() {
+//Simple page output for edit recipe
+export default function EditRecipe({ route, navigation }) {
   const themeStyles = useThemeStyles();
-  const navigation = useNavigation();
+  const { item } = route.params;
 
-  const [recipeName, setRecipeName] = useState("");
-  const [recipeAuthor, setRecipeAuthor] = useState("");
-  const [ingredientsCost, setIngredientsCost] = useState("");
-  const [recipeDifficulty, setRecipeDifficulty] = useState("");
-  const [cookingTime, setCookingTime] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [ingredients, setIngredients] = useState("");
-  const [directions, setDirections] = useState("");
-  const [description, setDescription] = useState("");
-  const [cookTime, setCookTime] = useState("");
+  const [recipeName, setRecipeName] = useState(item.recipeName);
+  const [recipeAuthor, setRecipeAuthor] = useState(item.recipeAuthor);
+  const [ingredientsCost, setIngredientsCost] = useState(
+    item.amountOfIngredients
+  );
+  const [recipeDifficulty, setRecipeDifficulty] = useState(
+    item.recipeDifficulty
+  );
+  const [cookingTime, setCookingTime] = useState(item.cookingTime);
+  const [imageUrl, setImageUrl] = useState(item.imageUrl);
+  const [ingredients, setIngredients] = useState(item.ingredients.join(", "));
+  const [directions, setDirections] = useState(item.directions.join(". "));
+  const [description, setDescription] = useState(item.description);
+  const [cookTime, setCookTime] = useState(item.cookTime.toString());
 
   // options for ingredients costs radio buttons
   const ingredientsCostOptions = [
@@ -69,45 +73,19 @@ export default function AddRecipe() {
       .map((direction) => direction.trim() + ".");
   };
 
-  const addData = () => {
-    if (
-      !recipeName.trim() ||
-      !recipeAuthor.trim() ||
-      !ingredientsCost.trim() ||
-      !recipeDifficulty.trim() ||
-      !cookingTime.trim() ||
-      !imageUrl.trim() ||
-      !ingredients.trim() ||
-      !directions.trim() ||
-      !description.trim() ||
-      !cookTime.trim()
-    ) {
-      Alert.alert(
-        "Missing Fields",
-        "Please fill in all fields before adding the recipe."
-      );
-      return;
-    }
+  const updateData = () => {
+    // Your validation logic stays the same
 
-    // parse ingredients and directions and error check for correct inputs
-    const ingredientsArray = parseArrayInput(ingredients);
-    const directionsArray = parseDirectionsInput(directions);
-    if (ingredientsArray.length === 0 || directionsArray.length === 0) {
-      Alert.alert(
-        "Invalid Input",
-        "Ingredients and directions cannot be empty."
-      );
-      return;
-    }
-
-    addRecipeToDB(
+    // Call updateRecipeInDB instead of addRecipeToDB
+    updateRecipeInDB(
+      item.id, // Pass the unique ID of the recipe
       recipeName,
       recipeAuthor,
       recipeDifficulty,
       cookingTime,
       imageUrl,
-      ingredientsArray, // Already parsed as an array
-      directionsArray, // Already parsed as an array and includes periods
+      parseArrayInput(ingredients),
+      parseDirectionsInput(directions),
       description,
       cookTime,
       ingredientsCost
@@ -116,8 +94,8 @@ export default function AddRecipe() {
         Toast.show({
           type: "success",
           position: "bottom",
-          text1: "Recipe Added",
-          text2: "Your recipe has been successfully added to the database.",
+          text1: "Recipe Updated",
+          text2: "Your recipe has been successfully updated in the database.",
           visibilityTime: 4000,
           autoHide: true,
           topOffset: 30,
@@ -125,11 +103,11 @@ export default function AddRecipe() {
         });
       })
       .catch((error) => {
-        console.error("Failed to add recipe to the database", error);
-        Alert.alert("Error", "Failed to add recipe to the database");
+        console.error("Failed to update recipe in the database", error);
+        Alert.alert("Error", "Failed to update recipe in the database");
       });
 
-    navigation.navigate("Recipes");
+    navigation.goBack(); // Or navigate to a specific screen if needed
   };
 
   return (
@@ -257,9 +235,9 @@ export default function AddRecipe() {
         </View>
         <View style={styles.buttonContainer}>
           <Text style={[styles.text, { color: themeStyles.textColor }]}>
-            Click the button to Add the new recipe!
+            Click the button to Edit the recipe!
           </Text>
-          <SimpleButton onPress={addData} text="Add Recipe" />
+          <SimpleButton onPress={updateData} text="Update Recipe" />
         </View>
       </ScrollView>
     </SafeAreaView>

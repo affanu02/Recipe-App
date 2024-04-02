@@ -13,17 +13,6 @@ const setupDatabaseAsync = async () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "DROP TABLE IF EXISTS recipes;",
-        [],
-        () => {
-          console.log("Recipes table dropped");
-        },
-        (t, error) => {
-          console.log("Error dropping recipes table:", error);
-        }
-      );
-
-      tx.executeSql(
         `CREATE TABLE IF NOT EXISTS recipes (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           recipeName TEXT,

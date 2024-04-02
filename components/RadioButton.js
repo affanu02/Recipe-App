@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useThemeStyles } from "../context/ThemeContext";
 
 const RadioButton = ({ options, selectedOption, onSelect }) => {
+  const themeStyles = useThemeStyles();
   return (
     <View style={styles.container}>
       {options.map((option) => (
@@ -14,8 +16,7 @@ const RadioButton = ({ options, selectedOption, onSelect }) => {
             style={[
               styles.circle,
               {
-                borderColor:
-                  selectedOption === option.value ? "#007bff" : "#000",
+                borderColor: themeStyles.textColor,
               },
             ]}
           >
@@ -23,7 +24,9 @@ const RadioButton = ({ options, selectedOption, onSelect }) => {
               <View style={styles.checkedCircle} />
             )}
           </View>
-          <Text style={styles.label}>{option.label}</Text>
+          <Text style={[styles.label, { color: themeStyles.textColor }]}>
+            {option.label}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>

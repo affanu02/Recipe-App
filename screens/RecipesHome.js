@@ -7,6 +7,7 @@ import {
   ImageBackground,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -36,9 +37,29 @@ const RecipeItem = ({ item, onToggleLike }) => {
     return textSize;
   };
 
+  // Add a long press handler function
+  const onLongPressRecipe = () => {
+    Alert.alert(
+      "Edit Recipe",
+      "Do you want to edit this recipe?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Edit",
+          onPress: () => navigation.navigate("EditRecipe", { item }), // Navigate to EditRecipe with the item data
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Recipe", { item })}
+      onLongPress={onLongPressRecipe}
       style={styles.itemContainer}
     >
       <ImageBackground

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, SafeAreaView, Switch } from "react-native";
+import { StyleSheet, View, Text, SafeAreaView, Switch } from "react-native";
 import { useTheme, useThemeStyles } from "../context/ThemeContext";
+import SimpleButton from "../components/SimpleButton";
+import { dropRecipesTable } from "../context/databaseManager";
 
 export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
@@ -23,16 +25,21 @@ export default function SettingsScreen() {
         { backgroundColor: themeStyles.backgroundColor },
       ]}
     >
-      <Text style={[styles.text, { color: themeStyles.textColor }]}>
-        Toggle Theme Preference:
-      </Text>
-      <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
+      <View style={styles.section}>
+        <Text style={[styles.text, { color: themeStyles.textColor }]}>
+          Toggle Theme Preference:
+        </Text>
+        <Switch
+          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
+      </View>
+      <View>
+        <SimpleButton onPress={dropRecipesTable} text="Delete Database" />
+      </View>
     </SafeAreaView>
   );
 }
@@ -42,6 +49,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+  },
+  section: {
+    alignItems: "center",
+    paddingVertical: 20,
   },
   text: {
     paddingTop: 20,
