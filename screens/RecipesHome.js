@@ -8,11 +8,12 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useLikedRecipes } from "../context/LikedRecipesContext";
 import { useThemeStyles } from "../context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { fetchRecipesFromDB } from "../context/databaseManager";
 
 //constants
 const recipeList = require("../recipe_list.json");
@@ -89,6 +90,29 @@ export default function RecipesHome() {
   const { likedRecipes, setLikedRecipes } = useLikedRecipes();
   const themeStyles = useThemeStyles();
   const navigation = useNavigation();
+  const [recipes, setRecipes] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchRecipes();
+    }, [])
+  );
+
+  const fetchRecipes = async () => {
+    setRefreshing(true); // Start refreshing
+    try {
+      const dbRecipes = await fetchRecipesFromDB();
+      setRecipes([...recipeList.recipes, ...dbRecipes]);
+    } catch (error) {
+      console.error("Failed to fetch recipes from database", error);
+    }
+    setRefreshing(false); // End refreshing
+  };
+
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
 
   const handleToggleLike = (recipeName) => {
     let newLikedRecipes;
@@ -108,12 +132,14 @@ export default function RecipesHome() {
       ]}
     >
       <FlatList
-        data={recipeList.recipes}
+        data={recipes}
         renderItem={({ item }) => (
           <RecipeItem item={item} onToggleLike={handleToggleLike} />
         )}
         keyExtractor={(item, index) => index.toString()}
         numColumns={2}
+        refreshing={refreshing}
+        onRefresh={fetchRecipes}
       />
       <TouchableOpacity
         style={styles.floatingButton}

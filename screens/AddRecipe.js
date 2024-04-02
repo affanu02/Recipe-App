@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,7 @@ import SimpleButton from "../components/SimpleButton";
 import RadioButton from "../components/RadioButton";
 import { useThemeStyles } from "../context/ThemeContext";
 import Toast from "react-native-toast-message";
-// import { addRecipeToDB } from "../context/databaseManager";
+import { addRecipeToDB } from "../context/databaseManager";
 
 //Simple page output for settings
 export default function AddRecipe() {
@@ -121,15 +121,17 @@ export default function AddRecipe() {
       ingredients: JSON.stringify(ingredientsArray),
       directions: JSON.stringify(directionsArray),
     });
-    console.log(db);
 
     addRecipeToDB(
       recipeName,
       recipeAuthor,
       recipeDifficulty,
       cookingTime,
-      JSON.stringify(ingredientsArray),
-      JSON.stringify(directionsArray)
+      imageUrl,
+      ingredientsArray, // Already parsed as an array
+      directionsArray, // Already parsed as an array and includes periods
+      description,
+      cookTime
     )
       .then(() => {
         Toast.show({
@@ -141,9 +143,6 @@ export default function AddRecipe() {
           autoHide: true,
           topOffset: 30,
           bottomOffset: 40,
-          onShow: () => {
-            navigation.navigate("RecipesHome");
-          },
         });
       })
       .catch((error) => {
