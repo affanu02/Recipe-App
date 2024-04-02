@@ -100,28 +100,6 @@ export default function AddRecipe() {
       return;
     }
 
-    /*
-    console.log("Recipe Name:", recipeName);
-    console.log("Recipe Author:", recipeAuthor);
-    console.log("Cost of Ingredients:", ingredientsCost);
-    console.log("Recipe Difficulty:", recipeDifficulty);
-    console.log("Cooking Time:", cookingTime);
-    console.log("Image URL:", imageUrl);
-    console.log("Ingredients:", ingredientsArray);
-    console.log("Directions:", directionsArray);
-    console.log("Description:", description);
-    console.log("Cook Time (minutes):", cookTime);
-    */
-
-    console.log({
-      recipeName,
-      recipeAuthor,
-      recipeDifficulty,
-      cookingTime,
-      ingredients: JSON.stringify(ingredientsArray),
-      directions: JSON.stringify(directionsArray),
-    });
-
     addRecipeToDB(
       recipeName,
       recipeAuthor,
@@ -131,7 +109,8 @@ export default function AddRecipe() {
       ingredientsArray, // Already parsed as an array
       directionsArray, // Already parsed as an array and includes periods
       description,
-      cookTime
+      cookTime,
+      ingredientsCost
     )
       .then(() => {
         Toast.show({

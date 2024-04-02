@@ -36,7 +36,8 @@ const setupDatabaseAsync = async () => {
           description TEXT,
           cookTime INTEGER,
           totalLikes INTEGER DEFAULT 20,
-          isFavourite BOOLEAN DEFAULT false
+          isFavourite BOOLEAN DEFAULT false,
+          amountOfIngredients TEXT
         );`,
         [],
         () => {

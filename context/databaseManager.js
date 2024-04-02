@@ -12,12 +12,13 @@ export const addRecipeToDB = async (
   ingredients,
   directions,
   description,
-  cookTime
+  cookTime,
+  ingredientsCost
 ) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        `INSERT INTO recipes (recipeName, recipeAuthor, recipeDifficulty, cookingTime, totalLikes, imageUrl, isFavourite, ingredients, directions, description, cookTime) VALUES (?, ?, ?, ?, 20, ?, false, ?, ?, ?, ?);`,
+        `INSERT INTO recipes (recipeName, recipeAuthor, recipeDifficulty, cookingTime, totalLikes, imageUrl, isFavourite, ingredients, directions, description, cookTime, amountOfIngredients) VALUES (?, ?, ?, ?, 20, ?, false, ?, ?, ?, ?, ?);`,
         [
           recipeName,
           recipeAuthor,
@@ -28,6 +29,7 @@ export const addRecipeToDB = async (
           JSON.stringify(directions),
           description,
           parseInt(cookTime),
+          ingredientsCost,
         ],
         (_, result) => resolve(result),
         (_, error) => reject(error)

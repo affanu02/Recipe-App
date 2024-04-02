@@ -8,9 +8,6 @@ import {
 } from "react-native";
 import { useThemeStyles } from "../context/ThemeContext";
 
-//Access recipeList.json
-const recipeList = require("../recipe_list.json");
-
 //output recipe to page
 export default function RecipeChosen({ route }) {
   const { item } = route.params;

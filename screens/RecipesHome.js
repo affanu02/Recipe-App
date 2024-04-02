@@ -30,6 +30,12 @@ const RecipeItem = ({ item, onToggleLike }) => {
     onToggleLike(item.recipeName);
   };
 
+  //measures text with
+  const measureText = (text) => {
+    const textSize = text.length * 8; // approximate width calculation
+    return textSize;
+  };
+
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate("Recipe", { item })}
@@ -44,7 +50,12 @@ const RecipeItem = ({ item, onToggleLike }) => {
             <Text style={styles.itemText}>{item.recipeAuthor}</Text>
             <TouchableOpacity onPress={toggleImage}>
               <Image
-                style={styles.like}
+                style={[
+                  styles.like,
+                  {
+                    marginLeft: itemWidth - measureText(item.recipeAuthor) - 40,
+                  },
+                ]}
                 source={
                   isLiked
                     ? require("../assets/heart.png")
@@ -99,11 +110,18 @@ export default function RecipesHome() {
     }, [])
   );
 
+  //fetchs data from JSON file and the local database
   const fetchRecipes = async () => {
     setRefreshing(true); // Start refreshing
     try {
       const dbRecipes = await fetchRecipesFromDB();
-      setRecipes([...recipeList.recipes, ...dbRecipes]);
+      // Convert JSON strings back to arrays if necessary
+      const recipesWithStructuredData = dbRecipes.map((recipe) => ({
+        ...recipe,
+        ingredients: JSON.parse(recipe.ingredients), // Assuming ingredients is a JSON string in the database
+        directions: JSON.parse(recipe.directions), // Assuming directions is a JSON string in the database
+      }));
+      setRecipes([...recipeList.recipes, ...recipesWithStructuredData]);
     } catch (error) {
       console.error("Failed to fetch recipes from database", error);
     }
@@ -114,6 +132,7 @@ export default function RecipesHome() {
     fetchRecipes();
   }, []);
 
+  //adds the recipe to the array of likedRecipes upon it being liked
   const handleToggleLike = (recipeName) => {
     let newLikedRecipes;
     if (likedRecipes.includes(recipeName)) {
@@ -121,6 +140,7 @@ export default function RecipesHome() {
     } else {
       newLikedRecipes = [...likedRecipes, recipeName];
     }
+    console.log(newLikedRecipes);
     setLikedRecipes(newLikedRecipes);
   };
 
@@ -186,7 +206,6 @@ const styles = StyleSheet.create({
     fontSize: 9,
   },
   like: {
-    marginLeft: itemWidth - 90,
     width: 30,
     height: 30,
   },
