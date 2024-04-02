@@ -1,0 +1,94 @@
+import SQLite from "react-native-sqlite-storage";
+
+SQLite.enablePromise(true);
+
+const database_name = "RecipesDB.db";
+const database_version = "1.0";
+const database_displayname = "SQLite Recipes Database";
+const database_size = 200000;
+
+let db;
+
+const openDB = async () => {
+  if (db) {
+    console.log("Database is already open");
+    return db;
+  } else {
+    try {
+      db = await SQLite.openDatabase(
+        database_name,
+        database_version,
+        database_displayname,
+        database_size
+      );
+
+      console.log("Database opened");
+      await initializeDatabase();
+      return db;
+    } catch (error) {
+      console.error("Failed to open database", error);
+      db = null;
+      throw error;
+    }
+  }
+};
+
+const initializeDatabase = async () => {
+  try {
+    await db.executeSql(
+      "CREATE TABLE IF NOT EXISTS Recipes (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, author TEXT, difficulty TEXT, time TEXT, ingredients TEXT, directions TEXT);"
+    );
+    console.log("Table created successfully");
+  } catch (error) {
+    console.log("Failed to create table", error);
+  }
+};
+
+const addRecipeToDB = async (
+  recipeName,
+  recipeAuthor,
+  recipeDifficulty,
+  cookingTime,
+  ingredients,
+  directions
+) => {
+  try {
+    await openDB(); // Ensure the DB is open before trying to insert
+    const results = await db.executeSql(
+      "INSERT INTO Recipes (name, author, difficulty, time, ingredients, directions) VALUES (?, ?, ?, ?, ?, ?);",
+      [
+        recipeName,
+        recipeAuthor,
+        recipeDifficulty,
+        cookingTime,
+        ingredients,
+        directions,
+      ]
+    );
+    console.log("Recipe added with ID: ", results[0].insertId);
+    return results[0].insertId; // Return the new record's ID
+  } catch (error) {
+    console.error("Error inserting recipe: ", error);
+    throw error;
+  }
+};
+
+const fetchAllRecipes = async () => {
+  try {
+    await openDB(); // Ensure the DB is open before trying to fetch
+    const results = await db.executeSql("SELECT * FROM Recipes;");
+    let recipes = [];
+    for (let i = 0; i < results[0].rows.length; i++) {
+      recipes.push(results[0].rows.item(i));
+    }
+    return recipes;
+  } catch (error) {
+    console.error("Error fetching recipes: ", error);
+    throw error;
+  }
+};
+
+// Call openDB() to open the database as soon as the app starts
+openDB();
+
+export { addRecipeToDB, fetchAllRecipes };
